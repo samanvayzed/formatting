@@ -1,0 +1,71 @@
+#for line in file_reader:
+#      parts = line.split(" ")
+#      line_tuple = (int(parts[0]), parts[1], int(parts[2]), int(parts[3]), float(parts[4]))
+#      key = line_tuple[1]
+#      outerdict[key] = innerdict 
+ 
+#      innerdict["number"] = line_tuple[0]
+#      innerdict["grade"] = line_tuple[2]
+#      innerdict["total"] = line_tuple[3]
+#      innerdict["weight"] = line_tuple[4] 
+
+import json
+
+
+num = 2
+inner_dict = {}
+outer_dict = {}
+
+keys=[0,1]
+values=[100,101]
+
+for x in range(num):
+    print(keys[x])
+    print(values[x])
+    outer_dict[x] = inner_dict
+    inner_dict['x']=keys[x]
+    inner_dict['value']=values[x]
+    print(inner_dict)
+    print(outer_dict[x])
+
+
+print(outer_dict)
+
+#print(outer_dict[0])
+#print(outer_dict[1])
+
+#list_of_dicts = []
+
+#for x in range(num):
+#    print("KKKKKK")
+#    print(x)
+#    print(outer_dict[x])
+#    print("OOOOOO")
+#    list_of_dicts.append(outer_dict[x])
+
+
+#print(list_of_dicts)
+
+
+#list_of_dicts = [dict_0,dict_1,dict_2,dict_3,dict_4,dict_5,dict_6,dict_7]
+#list_of_dicts = [dict_0,dict_1]
+
+
+# convert into JSON:
+#json_dict = json.dumps(list_of_dicts)
+
+# the result is a JSON string:
+#print(json_dict)
+
+            
+#print(outerdict[0])
+#dict_0 = {}
+#dict_0['x']=next_seven_days[0].strftime("%a")
+#dict_0['value']=pred_result0
+
+
+#dict_1 = {}
+#dict_1['x']=next_seven_days[1].strftime("%a")
+#dict_1['value']=pred_result1
+
+
