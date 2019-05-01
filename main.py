@@ -78,17 +78,37 @@ def predict():
 
 
             print(queryd)
+            copy_queryd = queryd.copy(deep=True)
+            copy_queryd.columns = ['day','month','year']
+
+            date_time = pd.to_datetime(copy_queryd[['day', 'month', 'year']])
+            #date_time.columns = ['timestamp']
+ 
+            date_time_df=pd.DataFrame(date_time, columns=["timestamp"])
+            date_time_df['d'] = date_time_df['timestamp'].dt.dayofweek
+            dnum=pd.DataFrame(date_time_df['d'])
+            dname = dnum['d'].apply(lambda x: calendar.day_abbr[x])
+            #df['weekday'] = df['Timestamp'].apply(lambda x: x.weekday())
+            
+            print("PPPPPPPPPPPPPP")
+            #print(copy_queryd)
+            #print(date_time_df)
+            #print(dname)
+            print("JJJJJJJJJJJJJJ")
+
             #print(queryd['m'])
-            mname = queryd['d'].apply(lambda x: calendar.day_abbr[x])
-            print(mname)
+            #mname = queryd['d'].apply(lambda x: calendar.day_abbr[x])
+            #print(mname)
             #print(queryxid1)
-            mname=pd.DataFrame(mname)
+
+            #mname=pd.DataFrame(queryd['d'])
+            #mname=pd.DataFrame(mname)
         
             predictiond=pd.DataFrame(predictiond, columns=["s"])
             print(predictiond)
-            con=pd.concat([mname,predictiond], axis=1)##################
+            con=pd.concat([dname,predictiond], axis=1)##################
             print(con)
-            df=pd.DataFrame(con)################
+            df=pd.DataFrame(con)###############
 
 
             df.set_index('d')['s'].to_dict()
