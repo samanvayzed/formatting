@@ -13,9 +13,9 @@ import pandas as pd
 import numpy as np
 from flask import request
 from datetime import datetime
-from flask_cors import CORS, cross_origin
-from wtforms import TextField,TextAreaField, SubmitField
-from wtforms.validators import Required
+#from flask_cors import CORS, cross_origin
+#from wtforms import TextField,TextAreaField, SubmitField
+#from wtforms.validators import Required
  
 import sys
 import os
@@ -52,11 +52,11 @@ model_colw = pickle.load(open(os.path.join(cur_dir,
 app = Flask(__name__)
 
 #for localhost
-cors = CORS(app, resources={r"/": {"origins": "http://localhost:5000"}})
+#cors = CORS(app, resources={r"/": {"origins": "http://localhost:5000"}})
 
 #daywise
 @app.route('/day', methods=['POST'])
-@cross_origin(origin='localhost',headers=['Content- Type','Authorization'])
+#@cross_origin(origin='localhost',headers=['Content- Type','Authorization'])
 
 #for gcp cloud
 #cors = CORS(app, resources={r"/": {"origins": "https://jts-board.appspot.com/"}})
@@ -175,7 +175,7 @@ def predict():
 
 #monthwise
 @app.route('/month', methods=['POST'])
-@cross_origin(origin='localhost',headers=['Content- Type','Authorization'])
+#@cross_origin(origin='localhost',headers=['Content- Type','Authorization'])
 
 
 def predmonth():
@@ -274,7 +274,7 @@ def predmonth():
   
     #weekwise
 @app.route('/week', methods=['POST'])
-@cross_origin(origin='localhost',headers=['Content- Type','Authorization'])
+#@cross_origin(origin='localhost',headers=['Content- Type','Authorization'])
 
 
 def predweek():
