@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Apr 29 10:33:37 2019
-
-@author: hp
-"""
-
-
 from flask import Flask, request, jsonify
 from sklearn.externals import joblib
 import traceback
@@ -13,9 +5,10 @@ import pandas as pd
 import numpy as np
 from flask import request
 from datetime import datetime
-#from flask_cors import CORS, cross_origin
-#from wtforms import TextField,TextAreaField, SubmitField
-#from wtforms.validators import Required
+
+from flask_cors import CORS, cross_origin
+from wtforms import TextField,TextAreaField, SubmitField
+from wtforms.validators import Required
  
 import sys
 import os
@@ -32,19 +25,19 @@ cur_dir = os.path.dirname('__file__')
 
 #monthwise
 regressor = pickle.load(open(os.path.join(cur_dir,
-			'pkl_objects/model.pkl'), 'rb'))
+			'pkl_objects/modelmonths.pkl'), 'rb'))
 model_columns = pickle.load(open(os.path.join(cur_dir,
-			'pkl_objects/model_columns.pkl'),'rb')) 
+			'pkl_objects/model_columnsm.pkl'),'rb')) 
 
 #daywise
 clf = pickle.load(open(os.path.join(cur_dir,
-			'pkl_objects/modeld.pkl'), 'rb'))
+			'pkl_objects/modeldays.pkl'), 'rb'))
 model_cold = pickle.load(open(os.path.join(cur_dir,
 			'pkl_objects/model_columnsd.pkl'),'rb')) 
 
 #weekwise
 clfweek = pickle.load(open(os.path.join(cur_dir,
-			'pkl_objects/modelw.pkl'), 'rb'))
+			'pkl_objects/modelweek.pkl'), 'rb'))
 model_colw = pickle.load(open(os.path.join(cur_dir,
 			'pkl_objects/model_columnsw.pkl'),'rb')) 
 
@@ -52,11 +45,11 @@ model_colw = pickle.load(open(os.path.join(cur_dir,
 app = Flask(__name__)
 
 #for localhost
-#cors = CORS(app, resources={r"/": {"origins": "http://localhost:5000"}})
+cors = CORS(app, resources={r"/": {"origins": "http://localhost:5000"}})
 
 #daywise
 @app.route('/day', methods=['POST'])
-#@cross_origin(origin='localhost',headers=['Content- Type','Authorization'])
+@cross_origin(origin='localhost',headers=['Content- Type','Authorization'])
 
 #for gcp cloud
 #cors = CORS(app, resources={r"/": {"origins": "https://jts-board.appspot.com/"}})
@@ -75,6 +68,7 @@ def predict():
             
             predictiond = list(clf.predict(queryd).astype("int64"))
             print(predictiond)
+            
 
 
             print(queryd)
@@ -105,6 +99,8 @@ def predict():
             #mname=pd.DataFrame(mname)
         
             predictiond=pd.DataFrame(predictiond, columns=["s"])
+            predictiond['s'] = predictiond['s'].apply(lambda x: x/1000)
+
             print(predictiond)
             con=pd.concat([dname,predictiond], axis=1)##################
             print(con)
@@ -175,7 +171,7 @@ def predict():
 
 #monthwise
 @app.route('/month', methods=['POST'])
-#@cross_origin(origin='localhost',headers=['Content- Type','Authorization'])
+@cross_origin(origin='localhost',headers=['Content- Type','Authorization'])
 
 
 def predmonth():
@@ -185,20 +181,35 @@ def predmonth():
             json1= request.json
             query1 = pd.get_dummies(pd.DataFrame(json1))
             query1 = query1.reindex(columns=model_columns, fill_value=0)
+            #print(query1)
+            copy_query1 = query1.copy(deep=True)
+            copy_query1['m'] = copy_query1['m'].astype(str) + '月'
+  
+
+            print("JJJJJJJJJJJJJJJJJJ")
             print(query1)
-            #print(query1['m'])
-            mname = query1['m'].apply(lambda x: calendar.month_abbr[x])
-            print(mname)
-            print(query1)
+            print("SSSSSSSSSSSSSSSSSS")
+            
+            
+            #mname = query1['m'].apply(lambda x: calendar.month_abbr[x])
+            mname = copy_query1['m']
+            #print(mname)
+            #print(query1)
+            
             mname=pd.DataFrame(mname)
-            
-            
+            print(mname)
+             
             prediction1 = (regressor.predict(query1).astype('int64'))
             #print(prediction1)
             #print(prediction)
             prediction1=pd.DataFrame(prediction1, columns=["s"])
+            
+            prediction1['s'] = prediction1['s'].apply(lambda x: x/1000)
+
             con=pd.concat([mname,prediction1], axis=1)
-            #print(con)
+            print("IIIIIIIIIII")
+            print(con)
+            print("NNNNNNNNNN")
             df=pd.DataFrame(con)
             #df.set_index('m')['0'].to_dict()
             df.set_index('m')['s'].to_dict()
@@ -214,10 +225,10 @@ def predmonth():
             months = df['m'].tolist()
             sales = df['s'].tolist()
 
-            #print("LLLLLLLLLLOOO")
-            #print(months[1])
-            #print(sales[1])
-            #print("KKKKKKKKKKKKK")
+            print("PPPPPPPPPP")
+            print(months)
+            print(sales)
+            print("KKKKKKKKKKKKK")
 
             list_of_dicts = []
             D={}
@@ -230,11 +241,12 @@ def predmonth():
                 D[i]['value']=sales[i]
                 list_of_dicts.append(D[i])
 
-
-            #print(list_of_dicts)
+            print("BBBBBBBBBBBBBB")
+            print(list_of_dicts)
+            print("LLLLLLLLLLLLLL")
 
             # convert into JSON:
-            json_dict = json.dumps(list_of_dicts)
+            json_dict = json.dumps(list_of_dicts,ensure_ascii=False)
 
             # the result is a JSON string:
             print("LLLLLLLLLLOOO")
@@ -261,8 +273,10 @@ def predmonth():
             #df.groupby('name')[['value1','value2']].apply(lambda g: g.values.tolist()).to_dict()
 
                 
-
+            
             #return jsonify({'prediction': str(prediction1)})
+            #t = "cheese"
+            #return(t)
             return(json_dict)
             
         except:
@@ -274,7 +288,7 @@ def predmonth():
   
     #weekwise
 @app.route('/week', methods=['POST'])
-#@cross_origin(origin='localhost',headers=['Content- Type','Authorization'])
+@cross_origin(origin='localhost',headers=['Content- Type','Authorization'])
 
 
 def predweek():
@@ -308,6 +322,8 @@ def predweek():
             #print(prediction)
             predictionw=pd.DataFrame(predictionw, columns=["s"])##########
             print(predictionw)
+            predictionw['s'] = predictionw['s'].apply(lambda x: x/1000)
+
             con=pd.concat([mname,predictionw], axis=1)##################
             print(con)
             df=pd.DataFrame(con)################
@@ -357,10 +373,6 @@ def predweek():
             print("KKKKKKKKKKKKK")
 
             return json_dict
-
-
-            
-                
             #return jsonify({'prediction weekwise': str(predictionw).splitlines()})
 
         except:
@@ -371,4 +383,4 @@ def predweek():
         return ('No model here to use')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(debug=True)
